@@ -83,7 +83,6 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
   }
 
   void _subscribeToStocks() {
-    print("_watchlist ${jsonEncode(_watchlist)}");
 
     final tokens = _watchlist.map((stock) => stock.token).toList();
     _channel.sink.add(jsonEncode({
@@ -95,25 +94,18 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
 
   void _handleMessage(dynamic message) {
     final data = jsonDecode(message);
-    print("DATA ${data}");
     stocksData1=data;
     stocksData2.forEach((key1, value1) {
-      print("DATA ${key1}    \n value1 ${value1}");
       if (stocksData2.containsKey(key1)) {
         int ltp= 0 ;
-        if(stocksData1[key1]!=null){
-          ltp = stocksData1[key1];
+        if(stocksData1["${key1}"]!=null){
+          ltp = stocksData1["${key1}"];
+
         }else{
 
         }
-        print("STOCKDARTA   key1 ${key1}");
 
         Map<String, dynamic> stockData2 = stocksData2[key1]!;
-      //   "key": key1,
-      // "symbol": stockData2["symbol"],
-      // "company": stockData2["company"],
-      // "industry": stockData2["industry"],
-      // "sectoralIndex": stockData2["sectoralIndex"],
         StockList stockList=StockList();
         stockList.key=key1;
         stockList.symbol=stockData2["symbol"];
@@ -121,8 +113,11 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
         stockList.industry=stockData2["industry"];
         stockList.sectoralIndex=stockData2["sectoralIndex"];
         stockList.ltp="${ltp}";
-        matchedStocks.add(stockList);
-        print("LTP ugygvdufysg ${matchedStocks[0].ltp}");
+       if(!matchedStocks.contains(stockList)){
+         matchedStocks.add(stockList);
+       }else{
+         matchedStocks.remove(stockList);
+       }
       }
     });
 
@@ -178,8 +173,8 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
             ),
             child: ListTile(
               title: Text(stock.symbol.toString()),
-              subtitle: Text('LTP: ${stock.company}'),
-              trailing: Text("LTP  ${stock.ltp}"),
+              subtitle: Text('LTP: ${stock.ltp}'),
+              trailing: Text("${stock.company}"),
             ),
           );
         },
